@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Дашборд механика{% endblock %}
+{% block content %}
+<h4 class="mb-3">Мои заказ-наряды</h4>
+
+<div class="card">
+  <div class="card-body">
+    <table class="table table-sm table-hover align-middle">
+      <thead><tr><th>#</th><th>Клиент</th><th>Авто</th><th>Статус</th><th class="text-end">Сумма</th></tr></thead>
+      <tbody>
+      {% for o in orders %}
+        <tr>
+          <td><a href="{% url 'workorder_detail' o.id %}">#{{ o.id }}</a></td>
+          <td>{{ o.car.client.full_name }}</td>
+          <td>{{ o.car.license_plate }}</td>
+          <td><span class="badge badge-soft">{{ o.get_status_display }}</span></td>
+          <td class="text-end">{{ o.total_amount|floatformat:2 }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-muted">Назначенных заказов нет</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

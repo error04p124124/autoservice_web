@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="mb-3">Отчеты</h4>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">Заказ-наряды по статусам</div>
+      <div class="card-body">
+        {% for s in by_status %}
+          <div class="d-flex justify-content-between">
+            <span>{{ s.status }}</span>
+            <span class="badge text-bg-secondary">{{ s.cnt }}</span>
+          </div>
+        {% empty %}
+          <div class="text-muted">Нет данных</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">Топ услуг (по количеству)</div>
+      <div class="card-body">
+        {% for x in top_services %}
+          <div class="d-flex justify-content-between">
+            <span>{{ x.service__service_name }}</span>
+            <span class="badge text-bg-secondary">{{ x.qty }}</span>
+          </div>
+        {% empty %}
+          <div class="text-muted">Нет данных</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">Топ запчастей (по количеству)</div>
+      <div class="card-body">
+        {% for x in top_parts %}
+          <div class="d-flex justify-content-between">
+            <span>{{ x.part__part_name }}</span>
+            <span class="badge text-bg-secondary">{{ x.qty }}</span>
+          </div>
+        {% empty %}
+          <div class="text-muted">Нет данных</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

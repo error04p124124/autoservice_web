@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="m-0">Склад запчастей</h4>
+  {% if request.user.is_superuser or request.user.role == 'admin' %}
+    <a class="btn btn-dark" href="{% url 'part_create' %}">+ Добавить</a>
+  {% endif %}
+</div>
+
+<form class="mb-3" method="get">
+  <div class="input-group" style="max-width: 520px;">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="Поиск по названию/артикулу/производителю">
+    <button class="btn btn-outline-secondary" type="submit">Найти</button>
+  </div>
+</form>
+
+<div class="card">
+  <div class="card-body">
+    <table class="table table-sm table-hover align-middle">
+      <thead><tr><th>#</th><th>Артикул</th><th>Название</th><th>Произв.</th><th>Кол-во</th><th>Мин.</th><th class="text-end">Цена</th><th></th></tr></thead>
+      <tbody>
+      {% for x in items %}
+        <tr class="{% if x.is_low_stock %}table-warning{% endif %}">
+          <td>{{ x.id }}</td>
+          <td>{{ x.article }}</td>
+          <td>{{ x.part_name }}</td>
+          <td>{{ x.manufacturer }}</td>
+          <td><b>{{ x.quantity }}</b></td>
+          <td>{{ x.min_stock }}</td>
+          <td class="text-end">{{ x.sale_price }}</td>
+          <td class="text-end">
+            {% if request.user.is_superuser or request.user.role == 'admin' %}
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'part_edit' x.id %}">Редактировать</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-muted">Нет записей</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

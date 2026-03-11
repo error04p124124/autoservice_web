@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}AutoService{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .sidebar { min-height: calc(100vh - 56px); }
+    .badge-soft { background: #f1f3f5; color: #495057; }
+    .table-hover tbody tr:hover { cursor: default; }
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">AutoService</a>
+    <div class="ms-auto text-white d-flex align-items-center gap-2">
+      <span class="small">{{ request.user.full_name|default:request.user.username }} ({{ request.user.get_role_display }})</span>
+      <a class="btn btn-sm btn-outline-light" href="/accounts/logout/">Выйти</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <aside class="col-12 col-md-3 col-lg-2 p-3 bg-white border-end sidebar">
+      <div class="list-group mb-3">
+        <a class="list-group-item list-group-item-action" href="/">Дашборд</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'workorder_list' %}">Заказ-наряды</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'client_list' %}">Клиенты</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'car_list' %}">Автомобили</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'service_list' %}">Услуги</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'part_list' %}">Склад</a>
+        {% if request.user.is_superuser or request.user.role == 'admin' %}
+          <a class="list-group-item list-group-item-action" href="{% url 'supplier_list' %}">Поставщики</a>
+          <a class="list-group-item list-group-item-action" href="{% url 'user_list' %}">Пользователи</a>
+          <a class="list-group-item list-group-item-action" href="{% url 'reports' %}">Отчеты</a>
+        {% endif %}
+      </div>
+
+      <div class="small text-muted">
+        <div class="fw-semibold">Быстрые действия</div>
+        {% if request.user.role != 'mechanic' or request.user.is_superuser %}
+          <a href="{% url 'workorder_create' %}">+ Новый заказ</a><br/>
+          <a href="{% url 'client_create' %}">+ Новый клиент</a><br/>
+          <a href="{% url 'car_create' %}">+ Новое авто</a>
+        {% endif %}
+      </div>
+    </aside>
+    <main class="col-12 col-md-9 col-lg-10 p-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{% if message.tags == 'error' %}Ошибка:{% endif %} {{ message }}</div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+</body>
+</html>

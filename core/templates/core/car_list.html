@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+    {% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="m-0">Автомобили</h4>
+      <a class="btn btn-dark" href="{% url 'car_create' %}">+ Добавить</a>
+    </div>
+
+    <form class="mb-3" method="get">
+      <div class="input-group" style="max-width: 520px;">
+        <input class="form-control" name="q" value="{{ q }}" placeholder="Поиск...">
+        <button class="btn btn-outline-secondary" type="submit">Найти</button>
+      </div>
+    </form>
+
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-sm table-hover align-middle">
+          <thead><tr><th>#</th><th>Клиент</th><th>Марка</th><th>Модель</th><th>Номер</th><th>VIN</th><th></th></tr></thead>
+          <tbody>
+            {% for x in items %}
+  <tr>
+    <td>{{ x.id }}</td>
+    <td>{{ x.client.full_name }}</td>
+    <td>{{ x.brand }}</td>
+    <td>{{ x.model }}</td>
+    <td>{{ x.license_plate }}</td>
+    <td class="small">{{ x.vin }}</td>
+    <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{% url 'car_edit' x.id %}">Редактировать</a></td>
+  </tr>
+{% empty %}
+  <tr><td colspan="7" class="text-muted">Нет записей</td></tr>
+{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endblock %}

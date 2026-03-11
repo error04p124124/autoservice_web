@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="m-0">Заказ-наряд #{{ wo.id }}</h4>
+    <div class="text-muted small">
+      {{ wo.created_date|date:"d.m.Y H:i" }} · Клиент: {{ wo.car.client.full_name }} · Авто: {{ wo.car.brand }} {{ wo.car.model }} ({{ wo.car.license_plate }})
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'workorder_pdf' wo.id %}">PDF</a>
+    {% if request.user.role != 'mechanic' or request.user.is_superuser %}
+      <a class="btn btn-outline-secondary" href="{% url 'workorder_edit' wo.id %}">Редактировать</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">Данные</div>
+      <div class="card-body">
+        <div><b>Статус:</b> <span class="badge badge-soft">{{ wo.get_status_display }}</span></div>
+        <div><b>Исполнитель:</b> {{ wo.mechanic.full_name|default:"—" }}</div>
+        <div class="mt-2"><b>Описание:</b><br/>{{ wo.description|default:"—" }}</div>
+
+        <div class="mt-3">
+          <div class="fw-semibold mb-1">Сменить статус</div>
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'workorder_set_status' wo.id 'created' %}">Создан</a>
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'workorder_set_status' wo.id 'in_progress' %}">В работе</a>
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'workorder_set_status' wo.id 'waiting_parts' %}">Ожидает запчастей</a>
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'workorder_set_status' wo.id 'ready' %}">Готов</a>
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'workorder_set_status' wo.id 'issued' %}">Выдан</a>
+          </div>
+          <div class="text-muted small mt-2">Механик может менять статус только своих заказов.</div>
+        </div>
+
+        <hr/>
+        <div class="d-flex justify-content-between">
+          <span class="fw-semibold">Итого:</span>
+          <span class="fw-semibold">{{ wo.total_amount|floatformat:2 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Услуги</span>
+        {% if request.user.role != 'mechanic' or request.user.is_superuser %}
+        <form class="d-flex gap-2" method="post" action="{% url 'workorder_add_service' wo.id %}">
+          {% csrf_token %}
+          {{ service_form.service }}
+          {{ service_form.qty }}
+          <button class="btn btn-sm btn-dark" type="submit">Добавить</button>
+        </form>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Услуга</th><th>Кол-во</th><th class="text-end">Сумма</th></tr></thead>
+          <tbody>
+          {% for x in wo.workorderservice_set.all %}
+            <tr>
+              <td>{{ x.service.service_name }}</td>
+              <td>{{ x.qty }}</td>
+              <td class="text-end">{{ x.line_total|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-muted">Услуги не добавлены</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Запчасти (списание со склада)</span>
+        <form class="d-flex gap-2" method="post" action="{% url 'workorder_add_part' wo.id %}">
+          {% csrf_token %}
+          {{ part_form.part }}
+          {{ part_form.qty }}
+          <button class="btn btn-sm btn-dark" type="submit">Добавить</button>
+        </form>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Запчасть</th><th>Кол-во</th><th class="text-end">Сумма</th></tr></thead>
+          <tbody>
+          {% for x in wo.workorderpart_set.all %}
+            <tr>
+              <td>{{ x.part.part_name }}</td>
+              <td>{{ x.qty }}</td>
+              <td class="text-end">{{ x.line_total|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-muted">Запчасти не добавлены</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="text-muted small">При добавлении запчасти остаток уменьшается автоматически.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
