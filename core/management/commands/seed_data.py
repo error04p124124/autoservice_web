@@ -93,9 +93,9 @@ class Command(BaseCommand):
         self.stdout.write("Создание клиентов и автомобилей...")
         clients_data = [
             dict(full_name="Кузнецов Дмитрий Олегович", phone="+7 916 111-22-33",
-                 email="kuznetsov@mail.ru", passport="45 12 345678"),
+                 email="kuznetsov@mail.ru", passport="4512345678"),
             dict(full_name="Морозова Екатерина Павловна", phone="+7 926 444-55-66",
-                 email="morozova@mail.ru", passport="46 13 654321"),
+                 email="morozova@mail.ru", passport="4613654321"),
         ]
         cars_data = [
             dict(vin="XTA210930X2456789", brand="Lada", model="Vesta", year=2021,
