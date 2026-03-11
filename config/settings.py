@@ -9,6 +9,16 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "nvka70hGq54paTqGB8syMlcoyoLuet3O3QGJjxFjUrUcWxygVm")
 DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1 localhost").split()
+# Allow all Railway auto-generated domains
+RAILWAY_STATIC_URL = os.getenv("RAILWAY_STATIC_URL", "")
+if RAILWAY_STATIC_URL:
+    ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
+RAILWAY_PUBLIC_DOMAIN = os.getenv("RAILWAY_PUBLIC_DOMAIN", "")
+if RAILWAY_PUBLIC_DOMAIN:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+# Fallback: allow all hosts when running on Railway (no DEBUG)
+if os.getenv("RAILWAY_ENVIRONMENT"):
+    ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
