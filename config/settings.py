@@ -20,6 +20,19 @@ if RAILWAY_PUBLIC_DOMAIN:
 if os.getenv("RAILWAY_ENVIRONMENT"):
     ALLOWED_HOSTS = ["*"]
 
+# CSRF: trust Railway HTTPS domains
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://127.0.0.1 http://localhost",
+).split()
+if os.getenv("RAILWAY_ENVIRONMENT"):
+    # Trust all *.railway.app subdomains over HTTPS
+    CSRF_TRUSTED_ORIGINS += ["https://*.railway.app", "https://*.up.railway.app"]
+
+# Required when behind Railway's reverse proxy (HTTPS termination)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
